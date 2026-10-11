@@ -1,0 +1,283 @@
+html
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>臻行骨科診所 - 網路掛號系統</title>
+    <style>
+        :root {
+            --primary-color: #007799;
+            --primary-hover: #005573;
+            --disabled-color: #cccccc;
+            --success-color: #28a745;
+        }
+        body {
+            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #444;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 8px;
+        }
+        /* 時段按鈕樣式 */
+        .slot-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        .slot-btn {
+            background: #fff;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .slot-btn:hover:not(:disabled) {
+            background-color: #e6f4f8;
+        }
+        .slot-btn.selected {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+        .slot-btn:disabled {
+            border-color: var(--disabled-color);
+            color: #999;
+            background: #f0f0f0;
+            cursor: not-allowed;
+        }
+        .badge {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 20px;
+            background: #e6f4f8;
+            color: var(--primary-color);
+        }
+        .slot-btn.selected .badge {
+            background: #fff;
+            color: var(--primary-color);
+        }
+        .slot-btn:disabled .badge {
+            background: #ddd;
+            color: #888;
+        }
+        /* 表單樣式 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        input[type="text"], input[type="tel"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        .submit-btn {
+            width: 100%;
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 14px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .submit-btn:hover {
+            background: var(--primary-hover);
+        }
+        /* 成功畫面樣式 */
+        .result-card {
+            display: none;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .success-icon {
+            color: var(--success-color);
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        .num-badge {
+            font-size: 36px;
+            color: #d9534f;
+            font-weight: bold;
+            margin: 15px 0;
+            background: #fdf2f2;
+            padding: 10px;
+            border-radius: 8px;
+            display: inline-block;
+            border: 1px dashed #d9534f;
+        }
+        .tip {
+            background: #fff8e1;
+            border-left: 4px solid #ffb300;
+            padding: 12px;
+            text-align: left;
+            font-size: 14px;
+            margin-top: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 掛號表單畫面 -->
+    <div class="container" id="bookingForm">
+        <h2>🏥 臻行骨科診所</h2>
+        <div class="subtitle">網路預約掛號系統</div>
+        
+        <div class="section-title">第一步：選擇看診時段 (限額 30 人)</div>
+        <div class="slot-group">
+            <!-- 模擬早班：未滿 -->
+            <button type="button" class="slot-btn" onclick="selectSlot(this, '早班 (09:00-12:00)', 14)">
+                <span>早班 (09:00-12:00)</span>
+                <span class="badge" id="count-morning">已預約 14 人</span>
+            </button>
+            
+            <!-- 模擬午班：快滿 -->
+            <button type="button" class="slot-btn" onclick="selectSlot(this, '午班 (15:00-17:30)', 29)">
+                <span>午班 (15:00-17:30)</span>
+                <span class="badge" id="count-afternoon">已預約 29 人</span>
+            </button>
+            
+            <!-- 模擬晚班：已滿 30 人，自動反灰 -->
+            <button type="button" class="slot-btn" disabled onclick="selectSlot(this, '晚班 (18:00-20:30)', 30)">
+                <span>晚班 (18:00-20:30)</span>
+                <span class="badge" id="count-evening">🔴 已額滿 (30/30)</span>
+            </button>
+        </div>
+
+        <div class="section-title">第二步：填寫基本資料</div>
+        <div class="form-group">
+            <label for="patientName">病患姓名</label>
+            <input type="text" id="patientName" placeholder="請輸入姓名" required>
+        </div>
+        <div class="form-group">
+            <label for="patientPhone">聯絡電話</label>
+            <input type="tel" id="patientPhone" placeholder="請輸入手機號碼" required>
+        </div>
+
+        <button type="button" class="submit-btn" onclick="submitBooking()">確認送出掛號</button>
+    </div>
+
+    <!-- 掛號成功結果畫面 -->
+    <div class="result-card" id="bookingResult">
+        <div class="success-icon">🎉</div>
+        <h2 style="color: var(--success-color);">網路掛號成功！</h2>
+        <p style="font-size: 16px; margin: 10px 0;">感謝您的預約，以下是您的掛號資訊：</p>
+        
+        <div style="text-align: left; background: #f9f9f9; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <p><strong>看診院區：</strong>臻行骨科診所</p>
+            <p><strong>預約時段：</strong><span id="resSlot" style="font-weight: bold; color: var(--primary-color);"></span></p>
+            <p><strong>病患姓名：</strong><span id="resName"></span></p>
+            <p><strong>時段總人數：</strong>該時段目前已預約 <span id="resTotal" style="font-weight: bold;"></span> 人</p>
+        </div>
+
+        <div>您的看診號碼</div>
+        <div class="num-badge"><span id="resNo"></span> 號</div>
+
+        <div class="tip">
+            <strong>💡 臻行骨科溫馨提示：</strong><br>
+            因骨科看診常需安排 <strong>X 光檢查</strong> 或 <strong>物理治療</strong>，建議您依據號碼提前 3-5 個號碼到院。報到時請攜帶健保卡至櫃檯辦理。
+        </div>
+    </div>
+
+    <script>
+        let selectedTimeText = "";
+        let currentBookedCount = 0;
+
+        // 選擇時段的互動效果
+        function selectSlot(button, timeText, count) {
+            // 清除其他按鈕的選取狀態
+            const buttons = document.querySelectorAll('.slot-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            
+            // 設定當前按鈕為選取狀態
+            button.classList.add('selected');
+            selectedTimeText = timeText;
+            currentBookedCount = count;
+        }
+
+        // 送出表單邏輯
+        function submitBooking() {
+            const name = document.getElementById('patientName').value.trim();
+            const phone = document.getElementById('patientPhone').value.trim();
+
+            if (!selectedTimeText) {
+                alert('請先選擇看診時段！');
+                return;
+            }
+            if (!name || !phone) {
+                alert('請完整填寫姓名與電話！');
+                return;
+            }
+
+            // 計算自己的號碼 (目前人數 + 1)
+            const myNumber = currentBookedCount + 1;
+            const newTotal = currentBookedCount + 1;
+
+            // 將資料帶入成功畫面
+            document.getElementById('resSlot').innerText = selectedTimeText;
+            document.getElementById('resName').innerText = name;
+            document.getElementById('resTotal').innerText = newTotal;
+            document.getElementById('resNo').innerText = myNumber;
+
+            // 切換畫面顯示
+            document.getElementById('bookingForm').style.display = 'none';
+            document.getElementById('bookingResult').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
