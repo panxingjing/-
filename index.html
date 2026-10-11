@@ -181,15 +181,15 @@ html
         <div class="section-title">第一步：選擇看診時段 (限額 30 人)</div>
         <div class="slot-group">
             <!-- 模擬早班：未滿 -->
-            <button type="button" class="slot-btn" onclick="selectSlot(this, '早班 (09:00-12:00)', 14)">
+            <button type="button" class="slot-btn" onclick="selectSlot(this, '早班 (09:00-12:00)', 0)">
                 <span>早班 (09:00-12:00)</span>
-                <span class="badge" id="count-morning">已預約 14 人</span>
+                <span class="badge" id="count-morning">已預約 0 人</span>
             </button>
             
             <!-- 模擬午班：快滿 -->
-            <button type="button" class="slot-btn" onclick="selectSlot(this, '午班 (15:00-17:30)', 29)">
+            <button type="button" class="slot-btn" onclick="selectSlot(this, '午班 (15:00-17:30)', 0)">
                 <span>午班 (15:00-17:30)</span>
-                <span class="badge" id="count-afternoon">已預約 29 人</span>
+                <span class="badge" id="count-afternoon">已預約 0 人</span>
             </button>
             
             <!-- 模擬晚班：已滿 30 人，自動反灰 -->
